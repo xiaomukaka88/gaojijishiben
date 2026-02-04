@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        x:Class="AdvancedNotepad.MainWindow"
+        Title="高级记事本"
+        Width="1000" Height="700">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10" Spacing="10">
+            <TextBlock VerticalAlignment="Center">字体:</TextBlock>
+            <TextBox x:Name="FontSizeTextBox" Width="50" Text="12" TextAlignment="Center"/>
+            
+            <TextBlock VerticalAlignment="Center" Margin="20,0,0,0">透明度:</TextBlock>
+            <Slider x:Name="OpacitySlider" Width="120" Minimum="20" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True" Value="100"/>
+            <TextBlock x:Name="OpacityText" VerticalAlignment="Center" Width="40" Text="100%"/>
+            
+            <CheckBox x:Name="TopMostCheckBox" VerticalAlignment="Center" Margin="10,0,0,0">置顶</CheckBox>
+            
+            <ComboBox x:Name="ThemeComboBox" Width="100" VerticalAlignment="Center" Margin="10,0,0,0">
+                <ComboBoxItem Content="浅色模式" Tag="Light"/>
+                <ComboBoxItem Content="深色模式" Tag="Dark"/>
+            </ComboBox>
+        </StackPanel>
+
+        <Border Grid.Row="1" Margin="10,0,10,10" BorderBrush="Gray" BorderThickness="1">
+            <TextBox x:Name="Editor"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     FontFamily="Consolas"
+                     FontSize="12"
+                     Padding="5"/>
+        </Border>
+    </Grid>
+</Window>

@@ -174,3 +174,12 @@
 *.lz
 *.lzma
 *.iso
+
+# .NET
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.json
+**/publish/
