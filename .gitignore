@@ -174,3 +174,15 @@
 *.lz
 *.lzma
 *.iso
+<<<<<<< HEAD
+=======
+
+# .NET
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.json
+**/publish/
+>>>>>>> 7cb5c368266b16f7e3555ed3f865fa4f5c21f6d8
