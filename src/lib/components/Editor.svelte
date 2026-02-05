@@ -150,14 +150,14 @@
       if (existingResult === '' || existingResult !== resultText) {
         const resultStart = lineStart + lastEqualIndex + 1;
         const resultEnd = lineEnd === -1 ? text.length : lineEnd;
-        const newContent = text.substring(0, resultStart) + ' ' + resultText + text.substring(resultEnd);
+        const newContent = text.substring(0, resultStart) + resultText + text.substring(resultEnd);
         
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + 1 + resultText.length;
+        const newCursorPos = resultStart + resultText.length;
         setCaretPosition(editorDiv, newCursorPos);
       }
     } catch (error) {
@@ -171,14 +171,14 @@
       if (existingResult === '' || existingResult !== errorText) {
         const resultStart = lineStart + lastEqualIndex + 1;
         const resultEnd = lineEnd === -1 ? text.length : lineEnd;
-        const newContent = text.substring(0, resultStart) + ' ' + errorText + text.substring(resultEnd);
+        const newContent = text.substring(0, resultStart) + errorText + text.substring(resultEnd);
         
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + 1 + errorText.length;
+        const newCursorPos = resultStart + errorText.length;
         setCaretPosition(editorDiv, newCursorPos);
       }
     }
