@@ -1,30 +1,10 @@
-# 生成 .exe 文件指南
+# 生成 .exe 文件操作步骤
 
-本指南帮助您在本地环境中生成高级记事本的 `.exe` 可执行文件。
-
----
-
-## 📋 前置要求
-
-### 1. 安装 Node.js
-下载并安装最新版本的 Node.js:
-- 访问: https://nodejs.org/
-- 下载 LTS 版本 (推荐 18.x 或更高)
-- 安装时勾选 "Add to PATH"
-
-### 2. 安装 Rust
-下载并安装 Rust 工具链:
-- Windows: https://rustup.rs/
-- 运行命令: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-
-### 3. 安装 pnpm
-```bash
-npm install -g pnpm
-```
+按照以下步骤在本地 Windows 环境中生成高级记事本的 `.exe` 文件。
 
 ---
 
-## 🔨 构建步骤
+## 前置要求
 
 ### 1. 克隆项目
 ```bash
@@ -32,128 +12,123 @@ git clone https://github.com/xiaomukaka88/gaojijishiben.git
 cd gaojijishiben
 ```
 
-### 2. 安装依赖
+### 2. 安装 Node.js
+- 访问: https://nodejs.org/
+- 下载并安装 Node.js 18.x 或更高版本 (LTS 版本)
+- 安装时勾选 "Add to PATH"
+
+### 3. 安装 Rust
+- 访问: https://www.rust-lang.org/tools/install
+- 下载并安装 Rustup
+- 运行命令安装 Rust:
+  ```bash
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  ```
+
+### 4. 安装 pnpm
 ```bash
+npm install -g pnpm
+```
+
+---
+
+## 构建步骤
+
+### 1. 安装依赖
+```bash
+cd gaojijishiben
 pnpm install
 ```
 
-### 3. 构建前端
+### 2. 构建前端
 ```bash
 pnpm run build
 ```
 
-### 4. 构建 Tauri 应用
+### 3. 构建 Tauri 应用(生成 .exe)
 ```bash
 pnpm run tauri:build
 ```
 
 ---
 
-## 📁 输出位置
+## 输出文件
 
-构建完成后,`.exe` 文件位于:
+构建成功后,.exe 文件位于:
 
-**Windows:**
 ```
 src-tauri/target/release/advanced-notepad.exe
 ```
 
+文件大小约 30-50 MB。
+
 ---
 
-## 🚨 常见问题
+## 常见问题
 
-### 问题 1: Rust 编译错误
-**错误信息:** `error: linker not found`
-**解决方法:** 安装 Microsoft C++ Build Tools
-- 访问: https://visualstudio.microsoft.com/downloads/
-- 下载 "Desktop C++" x64 或 x86
+### 问题1: Rust 编译错误
+**错误**: `error: linker not found`
+**解决**: 安装 Microsoft C++ Build Tools
+- 下载: https://visualstudio.microsoft.com/downloads/
+- 安装 "Desktop C++" x64 或 x86
 
-### 问题 2: Node.js 版本过低
-**错误信息:** `requires Node.js version 18 or higher`
-**解决方法:** 升级到最新 LTS 版本
-
-### 问题 3: pnpm 安装失败
-**解决方法:** 使用 npm 代替
+### 问题2: pnpm install 失败
+**解决**: 使用 npm 代替
 ```bash
 npm install
 npm run build
-npm run tauri:build
+npm run tauri: 完成
 ```
 
-### 问题 4: 构建速度很慢
-**说明:** 首次构建会比较慢,因为需要编译 Rust 依赖
-**优化:** 后续构建会使用缓存,速度会快很多
+### 问题3: 构建很慢
+**说明**: 首次构建需要 10-30 分钟,后续会快很多
+
+### 问题4: 杀毒软件误报
+**解决**: 添加到信任列表,或暂时关闭杀毒软件
 
 ---
 
-## ✅ 构建验证
+## 一键构建脚本
 
-构建成功后,您应该得到:
-- ✅ `advanced-notepad.exe` 文件
-- ✅ 文件大小约为 30-50 MB
-- ✅ 可以直接双击运行
-
----
-
-## 🎯 一键构建命令
-
-如果您已安装所有依赖,可以直接运行:
+如果您已完成所有环境配置,可以直接运行:
 
 ```bash
 git clone https://github.com/xiaomukaka88/gaojijishiben.git
 cd gaojijishiben
 pnpm install
+pnpm run build
 pnpm run tauri:build
 ```
 
 ---
 
-## 📝 注意事项
+## 开发模式测试
 
-1. **首次构建** 需要编译 Rust,可能需要 10-30 分钟
-2. **网络要求** 构建过程需要下载依赖,确保网络通畅
-3. **磁盘空间** 至少需要 5GB 可用空间
-4. **杀毒软件** 某些杀毒软件可能会误报,请信任构建的应用
-
----
-
-## 🔧 开发模式
-
-如果只是想测试功能,可以运行开发模式:
+如果只想测试功能而不生成 .exe:
 
 ```bash
 cd gaojijishiben
 pnpm install
-pnpm run tauri:dev
+pnpm run dev
 ```
 
-这将启动开发服务器,功能完全可用,但不生成 `.exe` 文件。
+这将启动开发服务器,所有功能都可以正常使用。
 
 ---
 
-## 📦 分发说明
+## 分发
 
-生成的 `.exe` 文件:
-- ✅ 包含所有依赖,无需安装其他文件
-- ✅ 可以直接复制到其他电脑使用
-- ✅ 适用于 Windows 10/11 操作系统
-
----
-
-## 🆘 需要帮助?
-
-如果构建过程中遇到问题,请检查:
-1. Node.js 版本: `node --version` (需要 18+)
-2. Rust 版本: `rustc --version` (需要 1.70+)
-3. pnpm 版本: `pnpm --version` (需要 8+)
+生成的 `.exe` 文件可以直接:
+- ✅ 发送给其他人使用
+- ✅ 上传到网盘分享
+- ✅ 复制到其他电脑
+- ✅ 打包成安装程序
 
 ---
 
-## 📞 联系方式
+## 需要帮助?
 
-如果您无法构建成功,可以提供:
-- 操作系统版本
-- 错误信息截图
-- 构建日志
-
-我会帮助您解决问题!
+如果遇到问题,请提供:
+1. 错误信息的完整内容
+2. 当前系统版本
+3. 已安装的软件版本
