@@ -39,7 +39,7 @@
 </script>
 
 <div class="flex flex-col h-screen">
-  <div class="flex items-center justify-center px-4 py-2 bg-[var(--surface-color)] border-b border-[var(--border-color)] gap-4">
+  <div class="flex items-center px-4 py-2 bg-[var(--surface-color)] border-b border-[var(--border-color)] gap-3">
     <!-- Logo: 记 -->
     <div class="w-10 h-10 bg-gradient-to-br from-[var(--primary-color)] to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
       记
@@ -50,8 +50,8 @@
         on:click={handleToggleAlwaysOnTop}
         class="w-10 h-10 rounded-xl flex items-center justify-center text-base {$settingsStore.alwaysOnTop ? 'bg-[var(--primary-color)] text-white shadow-md' : 'hover:bg-[var(--bg-color)]'} transition-all flex-shrink-0"
         title="置顶显示"
-      >
-        📌
+    >
+      📌
     </button>
 
     <!-- 主题切换 -->
@@ -59,8 +59,8 @@
         on:click={handleToggleTheme}
         class="w-10 h-10 rounded-xl flex items-center justify-center text-base hover:bg-[var(--bg-color)] transition-colors flex-shrink-0"
         title="切换主题"
-      >
-        {$themeStore.name === 'light' ? '🌙' : '🌓'}
+    >
+      {$themeStore.name === 'light' ? '🌙' : '☀️'}
     </button>
 
     <!-- 透明度 -->
@@ -74,7 +74,7 @@
         step="0.05"
         value={$settingsStore.opacity}
         on:input={handleOpacityChange}
-        class="w-16 h-1.5 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-color)]"
+        class="w-20 h-1.5 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-color)]"
       />
     </div>
 
@@ -89,7 +89,7 @@
         step="1"
         value={$settingsStore.fontSize}
         on:input={handleFontSizeChange}
-        class="w-16 h-1.5 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-color)]"
+        class="w-20 h-1.5 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-color)]"
       />
     </div>
   </div>
