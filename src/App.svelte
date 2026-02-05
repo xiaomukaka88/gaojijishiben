@@ -6,14 +6,13 @@
   import SettingsPanel from './lib/components/SettingsPanel.svelte';
   import { settingsStore } from './lib/stores/settings';
   import { themeStore } from './lib/stores/theme';
-  import { editorStore } from './lib/stores/editor';
 
   let showSettings = writable(false);
 
   onMount(async () => {
     await settingsStore.load();
     await themeStore.load();
-    await editorStore.load();
+    themeStore.applyTheme($themeStore);
   });
 </script>
 

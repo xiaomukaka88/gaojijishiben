@@ -12,12 +12,15 @@
   let content = '';
 
   onMount(async () => {
+    await editorStore.load();
+    await settingsStore.load();
+    
     editorStore.subscribe((state) => {
       content = state.content;
-      if (editorDiv) {
-        editorDiv.innerText = content;
+      if (editorDiv && state.content !== editorDiv.innerText) {
+        editorDiv.innerText = state.content;
       }
-    })();
+    });
 
     if (editorDiv) {
       editorDiv.innerText = content;
@@ -51,9 +54,13 @@
 
   function handleInput(event: Event) {
     const target = event.target as HTMLDivElement;
-    content = target.innerText;
-    editorStore.update((state) => ({ ...state, content }));
-    editorStore.scheduleSave();
+    const newContent = target.innerText;
+    
+    if (newContent !== content) {
+      content = newContent;
+      editorStore.update((state) => ({ ...state, content }));
+      editorStore.scheduleSave();
+    }
   }
 
   function handlePaste(event: ClipboardEvent) {
@@ -86,7 +93,12 @@
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === '=') {
-      calculateExpression();
+      event.preventDefault();
+      insertAtCursor('=');
+      
+      setTimeout(() => {
+        calculateExpression();
+      }, 0);
     }
   }
 
