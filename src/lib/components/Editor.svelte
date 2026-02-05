@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { editorStore } from '../stores/editor';
   import { settingsStore } from '../stores/settings';
+  import { invoke } from '@tauri-apps/api/core';
   import { Lexer } from '../parser/lexer';
   import { Parser } from '../parser/parser';
   import { Evaluator } from '../parser/evaluator';
@@ -20,6 +21,31 @@
 
     if (editorDiv) {
       editorDiv.innerText = content;
+    }
+
+    await applySettings();
+  });
+
+  async function applySettings() {
+    const settings = await new Promise((resolve) => {
+      const unsub = settingsStore.subscribe(resolve);
+      setTimeout(() => unsub(), 100);
+    });
+
+    try {
+      await invoke('set_window_opacity', { opacity: settings.opacity });
+      await invoke('set_window_always_on_top', { alwaysOnTop: settings.alwaysOnTop });
+    } catch (error) {
+      console.log('窗口命令不可用 (开发模式)');
+    }
+  }
+
+  settingsStore.subscribe(async (settings) => {
+    try {
+      await invoke('set_window_opacity', { opacity: settings.opacity });
+      await invoke('set_window_always_on_top', { alwaysOnTop: settings.alwaysOnTop });
+    } catch (error) {
+      console.log('窗口命令不可用 (开发模式)');
     }
   });
 
@@ -59,8 +85,7 @@
   }
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === '=' || event.key === 'Enter') {
-      event.preventDefault();
+    if (event.key === '=') {
       calculateExpression();
     }
   }
@@ -80,37 +105,50 @@
       lineEnd === -1 ? text.length : lineEnd
     );
 
+    console.log('当前行:', lineText);
+
     const lastEqualIndex = lineText.lastIndexOf('=');
     if (lastEqualIndex === -1 || lastEqualIndex === lineText.length - 1) return;
 
     const expression = lineText.substring(0, lastEqualIndex).trim();
     if (!expression) return;
 
+    console.log('计算表达式:', expression);
+
     try {
       const lexer = new Lexer(expression);
       const tokens = lexer.tokenize();
+      console.log('Tokens:', tokens);
+
       const parser = new Parser(tokens);
       const ast = parser.parse();
+      console.log('AST:', ast);
+
       const evaluator = new Evaluator();
       const result = evaluator.evaluate(ast);
+      console.log('结果:', result);
+
       const serializer = new Serializer();
       const resultText = serializer.serializeResult(result);
+      console.log('格式化结果:', resultText);
 
       const resultStart = lineStart + lastEqualIndex + 1;
       const resultEnd = lineEnd === -1 ? text.length : lineEnd;
       const existingResult = text.substring(resultStart, resultEnd);
 
       if (existingResult !== resultText) {
-        const newContent = text.substring(0, resultStart) + resultText + text.substring(resultEnd);
+        const newContent = text.substring(0, resultStart) + ' ' + resultText + text.substring(resultEnd);
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + resultText.length;
+        const newCursorPos = resultStart + resultText.length + 1;
         setCaretPosition(editorDiv, newCursorPos);
       }
     } catch (error) {
+      console.error('计算错误:', error);
+
       const serializer = new Serializer();
       const errorText = serializer.serializeError(error as Error);
 
@@ -119,13 +157,13 @@
       const existingResult = text.substring(resultStart, resultEnd);
 
       if (existingResult !== errorText) {
-        const newContent = text.substring(0, resultStart) + errorText + text.substring(resultEnd);
+        const newContent = text.substring(0, resultStart) + ' ' + errorText + text.substring(resultEnd);
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + errorText.length;
+        const newCursorPos = resultStart + errorText.length + 1;
         setCaretPosition(editorDiv, newCursorPos);
       }
     }
@@ -182,7 +220,7 @@
 
 <div
   bind:this={editorDiv}
-  class="flex-1 p-4 outline-none overflow-auto font-mono"
+  class="flex-1 p-4 outline-none overflow-auto font-mono whitespace-pre-wrap"
   contenteditable="true"
   on:input={handleInput}
   on:paste={handlePaste}

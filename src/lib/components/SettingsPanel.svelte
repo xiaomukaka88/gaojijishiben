@@ -1,10 +1,11 @@
 <script lang="ts">
   import { settingsStore } from '../stores/settings';
   import { themeStore, lightTheme, darkTheme } from '../stores/theme';
+  import { invoke } from '@tauri-apps/api/core';
 
   export let showSettings: boolean = false;
 
-  function handleThemeChange(event: Event) {
+  async function handleThemeChange(event: Event) {
     const select = event.target as HTMLSelectElement;
     const theme = select.value === 'dark' ? darkTheme : lightTheme;
     themeStore.set(theme);
@@ -12,22 +13,37 @@
     themeStore.save();
   }
 
-  function handleFontSizeChange(event: Event) {
+  async function handleFontSizeChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    settingsStore.update((s) => ({ ...s, fontSize: parseInt(input.value) }));
+    const fontSize = parseInt(input.value);
+    settingsStore.update((s) => ({ ...s, fontSize }));
     settingsStore.save();
   }
 
-  function handleOpacityChange(event: Event) {
+  async function handleOpacityChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    settingsStore.update((s) => ({ ...s, opacity: parseFloat(input.value) }));
+    const opacity = parseFloat(input.value);
+    settingsStore.update((s) => ({ ...s, opacity }));
     settingsStore.save();
+    
+    try {
+      await invoke('set_window_opacity', { opacity });
+    } catch (error) {
+      console.log('窗口命令不可用 (开发模式)');
+    }
   }
 
-  function handleAlwaysOnTopChange(event: Event) {
+  async function handleAlwaysOnTopChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
-    settingsStore.update((s) => ({ ...s, alwaysOnTop: checkbox.checked }));
+    const alwaysOnTop = checkbox.checked;
+    settingsStore.update((s) => ({ ...s, alwaysOnTop }));
     settingsStore.save();
+    
+    try {
+      await invoke('set_window_always_on_top', { alwaysOnTop });
+    } catch (error) {
+      console.log('窗口命令不可用 (开发模式)');
+    }
   }
 </script>
 

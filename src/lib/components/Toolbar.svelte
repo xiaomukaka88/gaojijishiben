@@ -2,6 +2,8 @@
   import { settingsStore } from '../stores/settings';
   import { themeStore } from '../stores/theme';
 
+  export let showSettings: boolean = false;
+
   function handleToggleTheme() {
     themeStore.toggle();
     themeStore.save();
@@ -34,6 +36,13 @@
       class="px-3 py-1 rounded {$settingsStore.alwaysOnTop ? 'bg-[var(--primary-color)] text-white' : 'bg-gray-300'}"
     >
       📌
+    </button>
+
+    <button
+      on:click={() => (showSettings = true)}
+      class="px-3 py-1 rounded bg-[var(--primary-color)] text-white hover:opacity-80"
+    >
+      ⚙️ 设置
     </button>
   </div>
 </div>

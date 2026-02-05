@@ -7,19 +7,18 @@
   import { settingsStore } from './lib/stores/settings';
   import { themeStore } from './lib/stores/theme';
   import { editorStore } from './lib/stores/editor';
-  import { EditorStorage } from './lib/utils/storage';
+
+  let showSettings = writable(false);
 
   onMount(async () => {
     await settingsStore.load();
     await themeStore.load();
     await editorStore.load();
   });
-
-  let showSettings = writable(false);
 </script>
 
 <div class="flex flex-col h-screen">
-  <Toolbar />
+  <Toolbar bind:showSettings={$showSettings} />
   <Editor />
 </div>
 
