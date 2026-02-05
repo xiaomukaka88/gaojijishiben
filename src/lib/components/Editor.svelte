@@ -94,6 +94,7 @@
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === '=') {
       event.preventDefault();
+      
       insertAtCursor('=');
       
       setTimeout(() => {
@@ -106,7 +107,6 @@
     const selection = window.getSelection();
     if (!selection || !editorDiv) return;
 
-    const range = selection.getRangeAt(0);
     const text = editorDiv.innerText;
     const cursorOffset = getCaretCharacterOffsetWithin(editorDiv);
 
@@ -118,9 +118,10 @@
     );
 
     console.log('当前行:', lineText);
+    console.log('光标位置:', cursorOffset);
 
     const lastEqualIndex = lineText.lastIndexOf('=');
-    if (lastEqualIndex === -1 || lastEqualIndex === lineText.length - 1) return;
+    if (lastEqualIndex === -1) return;
 
     const expression = lineText.substring(0, lastEqualIndex).trim();
     if (!expression) return;
@@ -144,18 +145,19 @@
       const resultText = serializer.serializeResult(result);
       console.log('格式化结果:', resultText);
 
-      const resultStart = lineStart + lastEqualIndex + 1;
-      const resultEnd = lineEnd === -1 ? text.length : lineEnd;
-      const existingResult = text.substring(resultStart, resultEnd);
-
-      if (existingResult !== resultText) {
+      const existingResult = lineText.substring(lastEqualIndex + 1).trim();
+      
+      if (existingResult === '' || existingResult !== resultText) {
+        const resultStart = lineStart + lastEqualIndex + 1;
+        const resultEnd = lineEnd === -1 ? text.length : lineEnd;
         const newContent = text.substring(0, resultStart) + ' ' + resultText + text.substring(resultEnd);
+        
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + resultText.length + 1;
+        const newCursorPos = resultStart + 1 + resultText.length;
         setCaretPosition(editorDiv, newCursorPos);
       }
     } catch (error) {
@@ -164,18 +166,19 @@
       const serializer = new Serializer();
       const errorText = serializer.serializeError(error as Error);
 
-      const resultStart = lineStart + lastEqualIndex + 1;
-      const resultEnd = lineEnd === -1 ? text.length : lineEnd;
-      const existingResult = text.substring(resultStart, resultEnd);
-
-      if (existingResult !== errorText) {
+      const existingResult = lineText.substring(lastEqualIndex + 1).trim();
+      
+      if (existingResult === '' || existingResult !== errorText) {
+        const resultStart = lineStart + lastEqualIndex + 1;
+        const resultEnd = lineEnd === -1 ? text.length : lineEnd;
         const newContent = text.substring(0, resultStart) + ' ' + errorText + text.substring(resultEnd);
+        
         editorDiv.innerText = newContent;
         content = newContent;
         editorStore.update((state) => ({ ...state, content }));
         editorStore.save();
 
-        const newCursorPos = resultStart + errorText.length + 1;
+        const newCursorPos = resultStart + 1 + errorText.length;
         setCaretPosition(editorDiv, newCursorPos);
       }
     }
