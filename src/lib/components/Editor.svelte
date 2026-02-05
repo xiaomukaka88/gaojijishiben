@@ -10,6 +10,7 @@
 
   let editorDiv: HTMLDivElement;
   let content = '';
+  let showIntro = true;
 
   onMount(async () => {
     await editorStore.load();
@@ -19,11 +20,18 @@
       content = state.content;
       if (editorDiv && state.content !== editorDiv.innerText) {
         editorDiv.innerText = state.content;
+        if (state.content && state.content.trim().length > 0) {
+          showIntro = false;
+        }
       }
     });
 
     if (editorDiv) {
+      const savedContent = editorDiv.innerText;
       editorDiv.innerText = content;
+      if (savedContent && savedContent.trim().length > 0) {
+        showIntro = false;
+      }
     }
 
     await applySettings();
@@ -60,6 +68,12 @@
       content = newContent;
       editorStore.update((state) => ({ ...state, content }));
       editorStore.scheduleSave();
+      
+      if (newContent.trim().length > 0) {
+        showIntro = false;
+      } else {
+        showIntro = true;
+      }
     }
   }
 
@@ -94,7 +108,6 @@
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === '=') {
       event.preventDefault();
-      
       insertAtCursor('=');
       
       setTimeout(() => {
@@ -117,33 +130,21 @@
       lineEnd === -1 ? text.length : lineEnd
     );
 
-    console.log('当前行:', lineText);
-    console.log('光标位置:', cursorOffset);
-
     const lastEqualIndex = lineText.lastIndexOf('=');
     if (lastEqualIndex === -1) return;
 
     const expression = lineText.substring(0, lastEqualIndex).trim();
     if (!expression) return;
 
-    console.log('计算表达式:', expression);
-
     try {
       const lexer = new Lexer(expression);
       const tokens = lexer.tokenize();
-      console.log('Tokens:', tokens);
-
       const parser = new Parser(tokens);
       const ast = parser.parse();
-      console.log('AST:', ast);
-
       const evaluator = new Evaluator();
       const result = evaluator.evaluate(ast);
-      console.log('结果:', result);
-
       const serializer = new Serializer();
       const resultText = serializer.serializeResult(result);
-      console.log('格式化结果:', resultText);
 
       const existingResult = lineText.substring(lastEqualIndex + 1).trim();
       
@@ -161,8 +162,6 @@
         setCaretPosition(editorDiv, newCursorPos);
       }
     } catch (error) {
-      console.error('计算错误:', error);
-
       const serializer = new Serializer();
       const errorText = serializer.serializeError(error as Error);
 
@@ -233,19 +232,59 @@
   }
 </script>
 
-<div
-  bind:this={editorDiv}
-  class="flex-1 p-4 outline-none overflow-auto font-mono whitespace-pre-wrap"
-  contenteditable="true"
-  on:input={handleInput}
-  on:paste={handlePaste}
-  on:keydown={handleKeyDown}
-  style="font-size: {$settingsStore.fontSize}px; min-height: 100%;"
-></div>
+<div class="flex-1 flex flex-col">
+  {#if showIntro}
+  <div class="flex-1 p-8 overflow-auto">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold mb-2">高级记事本</h1>
+        <p class="text-[var(--secondary-color)]">智能计算 · 自动保存</p>
+      </div>
+
+      <div class="bg-[var(--bg-color)] rounded-xl p-6 border border-[var(--border-color)]">
+        <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <span class="text-xl">🧮</span>
+          智能数学计算
+        </h2>
+        <div class="space-y-3 text-sm">
+          <p><strong>操作方式:</strong>输入数学表达式后按 <code class="bg-[var(--surface-color)] px-2 py-1 rounded">=</code> 键即可</p>
+          <p><strong>支持:</strong>四则运算、三角函数、对数、指数、平方根</p>
+          <p><strong>示例:</strong>2+3=5, sin(1.57)=1, sqrt(16)=4</p>
+        </div>
+      </div>
+
+      <div class="bg-[var(--bg-color)] rounded-xl p-6 border border-[var(--border-color)]">
+        <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <span class="text-xl">📝</span>
+          文本编辑
+        </h2>
+        <div class="space-y-2 text-sm">
+          <p>• 自由输入文字和数学公式</p>
+          <p>• 支持粘贴图片(Ctrl+V)</p>
+          <p>• 自动保存,防止数据丢失</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-[var(--primary-color)] to-blue-600 rounded-xl p-6 text-white">
+        <p class="text-center font-medium">👆 开始输入,功能介绍将自动隐藏</p>
+      </div>
+    </div>
+  </div>
+  {/if}
+
+  <div
+    bind:this={editorDiv}
+    class="flex-1 p-4 outline-none overflow-auto font-mono whitespace-pre-wrap"
+    contenteditable="true"
+    on:input={handleInput}
+    on:paste={handlePaste}
+    on:keydown={handleKeyDown}
+    style="font-size: {$settingsStore.fontSize}px; min-height: 100%;"
+  ></div>
+</div>
 
 <style>
   :global([contenteditable]:empty:before) {
-    content: '在此输入内容...';
-    color: var(--secondary-color);
+    content: '';
   }
 </style>
